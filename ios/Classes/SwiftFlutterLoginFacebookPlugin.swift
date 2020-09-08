@@ -76,27 +76,34 @@ public class SwiftFlutterLoginFacebookPlugin: NSObject, FlutterPlugin {
     }
     
     public func application(_ application: UIApplication,
-                            didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any] = [:]) -> Bool {
-        var options = [UIApplication.LaunchOptionsKey: Any]()
-        for (k, value) in launchOptions {
-            let key = k as! UIApplication.LaunchOptionsKey
-            options[key] = value
-        }
-        
+                            didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
         ApplicationDelegate.shared.application(
             application,
-            didFinishLaunchingWithOptions: options)
-        
+            didFinishLaunchingWithOptions: launchOptions)
+
         return true
     }
     
     public func application(_ application: UIApplication, open url: URL,
                             options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let processed = ApplicationDelegate.shared.application(
-            application, open: url,
-            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-            annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+            application, open: url, options: options)
         return processed;
+    }
+
+    public func application(
+        _ application: UIApplication,
+        open url: URL,
+        sourceApplication: String?,
+        annotation: Any
+    ) -> Bool {
+
+        return ApplicationDelegate.shared.application(
+            application, open: url,
+            sourceApplication: sourceApplication,
+            annotation: annotation
+        )
     }
     
     var isLoggedIn: Bool {
@@ -104,7 +111,7 @@ public class SwiftFlutterLoginFacebookPlugin: NSObject, FlutterPlugin {
         
         return !token.isExpired
     }
-    
+
     private func getSdkVersion(result: @escaping FlutterResult) {
         let sdkVersion = Settings.sdkVersion
         result(sdkVersion)
